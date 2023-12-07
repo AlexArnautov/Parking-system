@@ -1,21 +1,9 @@
-version: "3"
+version: '3.8'
 
 services:
-    app:
-        build:
-            context: ./
-        restart: always
-        hostname: parking.local
-        ports:
-            - "80:80"
-        volumes:
-            - ./:/var/www/html
-            - ./docker/config/php/php.ini:/usr/local/etc/php/php.ini
-            - ./docker/config/vhosts:/etc/apache2/sites-enabled
-            - ./docker/logs/site/apache2:/var/log/apache2
-        environment:
-            APACHE_DOCUMENT_ROOT: /var/www/html/public
-            XDEBUG_CONFIG: "client_host=host.docker.internal remote_port=9003"
-            PHP_IDE_CONFIG: serverName=parking.local
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./:/var/www/html:delegated
