@@ -1,0 +1,17 @@
+[Mon Dec 04 19:04:15.925380 2023] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.38 (Debian) PHP/8.2.7 OpenSSL/1.1.1n configured -- resuming normal operations
+[Mon Dec 04 19:04:15.925430 2023] [core:notice] [pid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Mon Dec 04 22:02:52.580562 2023] [mpm_prefork:notice] [pid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Dec 05 17:40:09.099921 2023] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.38 (Debian) PHP/8.2.7 OpenSSL/1.1.1n configured -- resuming normal operations
+[Tue Dec 05 17:40:09.100048 2023] [core:notice] [pid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Wed Dec 06 07:27:34.189112 2023] [mpm_prefork:notice] [pid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Wed Dec 06 17:14:02.437829 2023] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.38 (Debian) PHP/8.2.7 OpenSSL/1.1.1n configured -- resuming normal operations
+[Wed Dec 06 17:14:02.437906 2023] [core:notice] [pid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Wed Dec 06 19:51:19.071766 2023] [mpm_prefork:notice] [pid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Wed Dec 06 19:51:29.520816 2023] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.38 (Debian) PHP/8.2.7 OpenSSL/1.1.1n configured -- resuming normal operations
+[Wed Dec 06 19:51:29.520908 2023] [core:notice] [pid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Thu Dec 07 06:52:21.971671 2023] [mpm_prefork:notice] [pid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Thu Dec 07 17:26:33.844912 2023] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.38 (Debian) PHP/8.2.7 OpenSSL/1.1.1n configured -- resuming normal operations
+[Thu Dec 07 17:26:33.845005 2023] [core:notice] [pid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Thu Dec 07 18:15:52.288382 2023] [core:notice] [pid 1] AH00052: child pid 82 exit signal Interrupt (2)
+[Thu Dec 07 19:23:29.805045 2023] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.38 (Debian) PHP/8.2.7 OpenSSL/1.1.1n configured -- resuming normal operations
+[Thu Dec 07 19:23:29.805139 2023] [core:notice] [pid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
