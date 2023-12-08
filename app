@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Shared\Infrastructure\ConsoleCommand\EmulateCommand;
+use App\v2\Application\Cli\ParkingCommand;
 use Symfony\Component;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,7 +21,8 @@ $container->compile();
 
 $application = new Application();
 $application->addCommands([
-    $container->get(EmulateCommand::class)
+    $container->get(EmulateCommand::class),
+    $container->get(ParkingCommand::class),
 ]);
 
 $application->run();
