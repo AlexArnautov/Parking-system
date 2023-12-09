@@ -17,7 +17,6 @@ class FloorFinderService implements FloorFinderServiceInterface
     {
         $result = [];
 
-        /** @var Floor $floor */
         foreach ($parkingGarage->getFloors() as $key => $floor) {
             if ($floor->isVehicleAllowed($vehicle)) {
                 $result[$key] = $floor;
