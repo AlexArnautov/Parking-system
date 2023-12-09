@@ -5,23 +5,20 @@ declare(strict_types=1);
 namespace App\Parking\Domain\Entity;
 
 
+use App\Parking\Domain\Enum\ParkingSpotOccupancy;
 use App\Parking\Domain\Enum\VehicleType;
 
 final class Floor
 {
-    public const HALF_SPOT_CAPACITY = 0.5;
-    private float $occupiedSpace = 0;
+    private array $allowedVehicleTypes;
+    private array $parkingSpots;
 
     public function __construct(
-        private readonly float $capacity,
-        private array $allowedVehicleTypes
+        array $allowedVehicleTypes,
+        array $parkingSpots
     ) {
         $this->setAllowedVehicleTypes($allowedVehicleTypes);
-    }
-
-    public function getCapacity(): float
-    {
-        return $this->capacity;
+        $this->setParkingSpots($parkingSpots);
     }
 
     public function addAllowedVehicleType(VehicleType $vehicleType): void
@@ -36,11 +33,18 @@ final class Floor
         }
     }
 
-    public function hasHalfOfParkingSpace(): bool
+    public function addParkingSpot(ParkingSpot $parkingSpot): void
     {
-        $fractionalPart = fmod($this->occupiedSpace, 1);
-        return $fractionalPart === self::HALF_SPOT_CAPACITY;
+        $this->parkingSpots[] = $parkingSpot;
     }
+
+    private function setParkingSpots(array $parkingSpots): void
+    {
+        foreach ($parkingSpots as $parkingSpot) {
+            $this->addParkingSpot($parkingSpot);
+        }
+    }
+
 
     public function isVehicleAllowed(Vehicle $vehicle): bool
     {
@@ -50,19 +54,29 @@ final class Floor
         return false;
     }
 
-    public function getOccupiedSpace(): float
+    public function getParkingSpots(): array
     {
-        return $this->occupiedSpace;
+        return $this->parkingSpots;
     }
 
-    public function setOccupiedSpace(float $occupiedSpace): void
+    public function changeParkingSpot(int $number, ParkingSpotOccupancy $spotOccupancy): void
     {
-        $this->occupiedSpace = $occupiedSpace;
+        $this->parkingSpots[$number] = new ParkingSpot($spotOccupancy);
     }
 
-
-    public function getLeftCapacity(): float
+    public function getLeftSpace(): float|int
     {
-        return $this->capacity - $this->occupiedSpace;
+        $result = 0;
+        /** @var ParkingSpot $parkingSpot */
+        foreach ($this->parkingSpots as $parkingSpot) {
+            $space = match ($parkingSpot->getOccupancy()) {
+                ParkingSpotOccupancy::Half => 0.5,
+                ParkingSpotOccupancy::Full => 0,
+                ParkingSpotOccupancy::Free => 1,
+            };
+            $result += $space;
+        }
+
+        return $result;
     }
 }

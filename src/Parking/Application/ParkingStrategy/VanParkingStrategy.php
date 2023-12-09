@@ -4,34 +4,70 @@ namespace App\Parking\Application\ParkingStrategy;
 
 
 use App\Parking\Application\Service\FloorFinderServiceInterface;
+use App\Parking\Domain\Entity\Floor;
 use App\Parking\Domain\Entity\ParkingGarage;
 use App\Parking\Domain\Entity\Vehicle;
+use App\Parking\Domain\Enum\ParkingSpotOccupancy;
 
 
 readonly class VanParkingStrategy implements ParkingStrategyInterface
 {
 
     public function __construct(
-        private FloorFinderServiceInterface $floorFinderService
+        private FloorFinderServiceInterface $finderService
     ) {
     }
 
     public function park(ParkingGarage $parkingGarage, Vehicle $vehicle): bool
     {
-        $possibleFloors = $this->floorFinderService->getAllowedNotFullFloors($parkingGarage, $vehicle);
+        $allowedFloors = $this->finderService->getAllowedFloors($parkingGarage, $vehicle);
 
-        if (empty($possibleFloors)) {
+        if (empty($allowedFloors)) {
             return false;
         }
 
-        $optimalFloors = $this->floorFinderService->getFloorsWithHalfOfSpot($possibleFloors);
-        if (!empty($optimalFloors)) {
-            $possibleFloors = $optimalFloors;
+        /** @var Floor $floor */
+        foreach ($allowedFloors as $floor) {
+            $halfSpotNumber = $this->finderService->getRequiredParkingSpotKey(
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Half
+            );
+
+            $fullSpotNumber = $this->finderService->getRequiredParkingSpotKey(
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Free
+            );
+
+            if ($halfSpotNumber !== null && $fullSpotNumber !== null) {
+                $floor->changeParkingSpot($halfSpotNumber, ParkingSpotOccupancy::Full);
+                $floor->changeParkingSpot($fullSpotNumber, ParkingSpotOccupancy::Full);
+                return true;
+            }
         }
 
-        $floorNumber = $this->floorFinderService->getMostUnloadedFloorKey($possibleFloors);
-        $floor = $parkingGarage->getFloors()[$floorNumber];
-        $floor->setOccupiedSpace($floor->getOccupiedSpace() + $vehicle->type->getSize());
-        return true;
+        /** @var Floor $floor */
+        foreach ($allowedFloors as $floor) {
+            $firstFreeSpotNumber = $this->finderService->getRequiredParkingSpotKey(
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Free
+            );
+
+            if ($firstFreeSpotNumber === null) {
+                return false;
+            }
+            $secondFreeSpotNumber = $this->finderService->getRequiredParkingSpotKey(
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Free,
+                blockedNumber: $firstFreeSpotNumber
+            );
+
+            if ($firstFreeSpotNumber !== null && $secondFreeSpotNumber !== null) {
+                $floor->changeParkingSpot($firstFreeSpotNumber, ParkingSpotOccupancy::Full);
+                $floor->changeParkingSpot($secondFreeSpotNumber, ParkingSpotOccupancy::Half);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -8,7 +8,10 @@ use App\Parking\Application\ParkingStrategy\ParkingStrategyFactory;
 use App\Parking\Application\ParkingStrategy\ParkingStrategyInterface;
 use App\Parking\Domain\Entity\Floor;
 use App\Parking\Domain\Entity\ParkingGarage;
+use App\Parking\Domain\Entity\ParkingSpot;
+use App\Parking\Domain\Enum\ParkingSpotOccupancy;
 use App\Parking\Domain\Enum\VehicleType;
+use App\Parking\Infrastructure\Factory\EmptyParkingSpotsFactory;
 use App\Parking\Infrastructure\Factory\RandomVehicleFactory;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -33,6 +36,7 @@ class EmulateCommand extends Console\Command\Command
     (
         private readonly RandomVehicleFactory $vehicleFactory,
         private readonly ParkingStrategyFactory $parkingStrategyFactory,
+        private readonly EmptyParkingSpotsFactory $emptyParkingSpotsFactory,
         private readonly LoggerInterface $logger,
     ) {
         parent::__construct(self::$defaultName);
@@ -66,28 +70,25 @@ class EmulateCommand extends Console\Command\Command
         $vehicleAmount = (int)$helper->ask($input, $output, $question);
 
         $groundFloor = new Floor(
-            capacity: $groundFloorCapacity,
-            allowedVehicleTypes: [VehicleType::Moto, VehicleType::Car, VehicleType::Van]
+            allowedVehicleTypes: [VehicleType::Moto, VehicleType::Car, VehicleType::Van],
+            parkingSpots: $this->emptyParkingSpotsFactory->generateParkingSpots($groundFloorCapacity)
         );
 
         $secondFloor = new Floor(
-            capacity: $secondFloorCapacity,
-            allowedVehicleTypes: [VehicleType::Car, VehicleType::Moto]
+            allowedVehicleTypes: [VehicleType::Car, VehicleType::Moto],
+            parkingSpots: $this->emptyParkingSpotsFactory->generateParkingSpots($secondFloorCapacity)
         );
 
         $thirdFloor = new Floor(
-            capacity: $thirdFloorCapacity,
-            allowedVehicleTypes: [VehicleType::Car, VehicleType::Moto]
+            allowedVehicleTypes: [VehicleType::Car, VehicleType::Moto],
+            parkingSpots: $this->emptyParkingSpotsFactory->generateParkingSpots($thirdFloorCapacity)
         );
 
         $parkingGarage = new ParkingGarage([$groundFloor, $secondFloor, $thirdFloor]);
 
-        $this->io->info('Initial capacity');
-        $this->printGarageStats($parkingGarage);
-
         for ($i = 1; $i <= $vehicleAmount; $i++) {
             $vehicle = $this->vehicleFactory->createRandomVehicle();
-            $this->io->writeln('Trying parking a <comment>' . $vehicle->type->name.'</comment>');
+            $this->io->writeln('Trying parking a <comment>' . $vehicle->type->name . '</comment>');
 
             /** @var ParkingStrategyInterface $parkingStrategy */
             $parkingStrategy = $this->parkingStrategyFactory->getStrategy($vehicle);
@@ -96,18 +97,34 @@ class EmulateCommand extends Console\Command\Command
             $this->printGarageStats($parkingGarage);
             $this->io->newLine();
             $this->io->newLine();
-            sleep(1);
+            sleep(2);
         }
 
-        $this->io->info('You can check the file for logs '.getcwd(). self::LOG_FILE);
+        $this->io->info('You can check the file for logs ' . getcwd() . self::LOG_FILE);
 
         return self::SUCCESS;
     }
 
     private function printGarageStats(ParkingGarage $parkingGarage): void
     {
+        $map = [
+            ParkingSpotOccupancy::Free->value => '░ ',
+            ParkingSpotOccupancy::Half->value => '▄ ',
+            ParkingSpotOccupancy::Full->value => '█ ',
+        ];
+
+        /** @var Floor $floor */
         foreach ($parkingGarage->getFloors() as $number => $floor) {
-            $msg = 'Floor ' . $number . ' space left: ' . $floor->getLeftCapacity();
+            $msg = 'Floor ' . $number . ' space left: ' . $floor->getLeftSpace();
+
+            $visualisation = '';
+
+            /** @var ParkingSpot $parkingSpot */
+            foreach ($floor->getParkingSpots() as $parkingSpot) {
+                $visualisation .= $map[$parkingSpot->getOccupancy()->value];
+            }
+            $this->io->writeln($visualisation);
+            $this->logger->info($visualisation);
             $this->io->writeln($msg);
             $this->logger->info($msg);
         }

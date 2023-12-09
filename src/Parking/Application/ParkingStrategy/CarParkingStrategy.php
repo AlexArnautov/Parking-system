@@ -7,6 +7,7 @@ use App\Parking\Application\Service\FloorFinderServiceInterface;
 use App\Parking\Domain\Entity\Floor;
 use App\Parking\Domain\Entity\ParkingGarage;
 use App\Parking\Domain\Entity\Vehicle;
+use App\Parking\Domain\Enum\ParkingSpotOccupancy;
 
 
 readonly class CarParkingStrategy implements ParkingStrategyInterface
@@ -19,16 +20,21 @@ readonly class CarParkingStrategy implements ParkingStrategyInterface
 
     public function park(ParkingGarage $parkingGarage, Vehicle $vehicle): bool
     {
-        $possibleFloors = $this->floorFinderService->getAllowedNotFullFloors($parkingGarage, $vehicle);
+        $allowedFloors = $this->floorFinderService->getAllowedFloors($parkingGarage, $vehicle);
 
-        if (empty($possibleFloors)) {
+        if (empty($allowedFloors)) {
             return false;
         }
 
-        $floorNumber = $this->floorFinderService->getMostUnloadedFloorKey($possibleFloors);
         /** @var Floor $floor */
-        $floor = $parkingGarage->getFloors()[$floorNumber];
-        $floor->setOccupiedSpace($floor->getOccupiedSpace() + $vehicle->type->getSize());
-        return true;
+        foreach ($allowedFloors as $floor) {
+            $spotNumber = $this->floorFinderService->getRequiredParkingSpotKey($floor, ParkingSpotOccupancy::Free);
+            if ($spotNumber !== null) {
+                $floor->changeParkingSpot($spotNumber, ParkingSpotOccupancy::Full);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -7,59 +7,37 @@ namespace App\Parking\Application\Service;
 
 use App\Parking\Domain\Entity\Floor;
 use App\Parking\Domain\Entity\ParkingGarage;
+use App\Parking\Domain\Entity\ParkingSpot;
 use App\Parking\Domain\Entity\Vehicle;
+use App\Parking\Domain\Enum\ParkingSpotOccupancy;
 
 class FloorFinderService implements FloorFinderServiceInterface
 {
-
-    public function getAllowedNotFullFloors(ParkingGarage $parkingGarage, Vehicle $vehicle): array
+    public function getAllowedFloors(ParkingGarage $parkingGarage, Vehicle $vehicle): array
     {
         $result = [];
 
         /** @var Floor $floor */
         foreach ($parkingGarage->getFloors() as $key => $floor) {
-            if ($floor->isVehicleAllowed($vehicle)
-                && $floor->getLeftCapacity() >= $vehicle->type->getSize()) {
+            if ($floor->isVehicleAllowed($vehicle)) {
                 $result[$key] = $floor;
             }
         }
         return $result;
     }
 
-    /**
-     * For most optimal load we will use left half of parking slots as soon as possible
-     * Example: we will put motorcycle to half of slot where already parked another motorcycle
-     * @param array<Floor> $floors
-     */
-    public function getFloorsWithHalfOfSpot(
-        array $floors,
-    ): array {
-        $result = [];
-        foreach ($floors as $key => $floor) {
-            if ($floor->hasHalfOfParkingSpace()) {
-                $result[$key] = $floor;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array<Floor> $floors
-     */
-    public function getMostUnloadedFloorKey(array $floors): int
+    public function getRequiredParkingSpotKey(Floor $floor, ParkingSpotOccupancy $spotOccupancy, int $blockedNumber = null): ?int
     {
-        $maxLeftCapacity = PHP_FLOAT_MIN;
-        $floorWithMaxLeftCapacity = null;
-
-        foreach ($floors as $key => $floor) {
-            $leftCapacity = $floor->getLeftCapacity();
-            if ($leftCapacity > $maxLeftCapacity) {
-                $maxLeftCapacity = $leftCapacity;
-                $floorWithMaxLeftCapacity = $key;
+        /** @var ParkingSpot $parkingSpot */
+        foreach ($floor->getParkingSpots() as $key => $parkingSpot) {
+            if ($key === $blockedNumber) {
+                continue;
+            }
+            if ($parkingSpot->getOccupancy() === $spotOccupancy) {
+                return $key;
             }
         }
 
-        return $floorWithMaxLeftCapacity;
+        return null;
     }
 }
