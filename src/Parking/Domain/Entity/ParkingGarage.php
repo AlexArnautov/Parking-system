@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\ParkingGarage\Domain\Entity;
+namespace App\Parking\Domain\Entity;
 
-use App\Floor\Domain\Entity\FloorInterface;
-
-class ParkingGarage implements ParkingGarageInterface
+final class ParkingGarage
 {
     private array $floors;
 
@@ -27,7 +25,7 @@ class ParkingGarage implements ParkingGarageInterface
         }
     }
 
-    public function addFloor(FloorInterface $floor): void
+    public function addFloor(Floor $floor): void
     {
         $this->floors[] = $floor;
     }

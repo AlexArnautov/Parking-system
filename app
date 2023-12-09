@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use App\Shared\Infrastructure\ConsoleCommand\EmulateCommand;
+use App\Parking\Infrastructure\Cli\EmulateCommand;
 use Symfony\Component;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
