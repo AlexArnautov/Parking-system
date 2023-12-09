@@ -10,6 +10,7 @@ use Exception;
 
 class RandomVehicleFactory
 {
+
     /**
      * @throws Exception
      */

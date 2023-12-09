@@ -29,13 +29,13 @@ readonly class VanParkingStrategy implements ParkingStrategyInterface
         /** @var Floor $floor */
         foreach ($allowedFloors as $floor) {
             $halfSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                floor: $floor,
-                spotOccupancy: ParkingSpotOccupancy::Half
+                $floor,
+                ParkingSpotOccupancy::Half
             );
 
             $fullSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                floor: $floor,
-                spotOccupancy: ParkingSpotOccupancy::Free
+                $floor,
+                ParkingSpotOccupancy::Free
             );
 
             if ($halfSpotNumber !== null && $fullSpotNumber !== null) {
@@ -48,20 +48,21 @@ readonly class VanParkingStrategy implements ParkingStrategyInterface
         /** @var Floor $floor */
         foreach ($allowedFloors as $floor) {
             $firstFreeSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                floor: $floor,
-                spotOccupancy: ParkingSpotOccupancy::Free
+                $floor,
+                ParkingSpotOccupancy::Free
             );
 
             if ($firstFreeSpotNumber === null) {
                 return false;
             }
+
             $secondFreeSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                floor: $floor,
-                spotOccupancy: ParkingSpotOccupancy::Free,
-                blockedNumber: $firstFreeSpotNumber
+                $floor,
+                ParkingSpotOccupancy::Free,
+                $firstFreeSpotNumber
             );
 
-            if ($firstFreeSpotNumber !== null && $secondFreeSpotNumber !== null) {
+            if ($secondFreeSpotNumber !== null) {
                 $floor->changeParkingSpot($firstFreeSpotNumber, ParkingSpotOccupancy::Full);
                 $floor->changeParkingSpot($secondFreeSpotNumber, ParkingSpotOccupancy::Half);
                 return true;

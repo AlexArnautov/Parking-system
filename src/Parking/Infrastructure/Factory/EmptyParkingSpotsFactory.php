@@ -11,7 +11,7 @@ use App\Parking\Domain\Enum\ParkingSpotOccupancy;
 class EmptyParkingSpotsFactory
 {
     /**
-     * @return <ParkingSpot>array
+     * @return array<ParkingSpot>
      */
     public function generateParkingSpots(int $amount): array
     {

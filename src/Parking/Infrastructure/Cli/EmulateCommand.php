@@ -26,7 +26,8 @@ class EmulateCommand extends Console\Command\Command
     private const SUCCESS_MSG = 'Welcome, please go in';
     private const REJECT_MSG = 'Sorry, no spaces left';
     private const TITLE_MSG = 'Emulate parking garage.';
-    const LOG_FILE = '/app.log';
+    private const START_MSG = 'Start emulation.';
+    private const LOG_FILE = '/app.log';
 
     private SymfonyStyle $io;
 
@@ -70,25 +71,27 @@ class EmulateCommand extends Console\Command\Command
         $vehicleAmount = (int)$helper->ask($input, $output, $question);
 
         $groundFloor = new Floor(
-            allowedVehicleTypes: [VehicleType::Moto, VehicleType::Car, VehicleType::Van],
-            parkingSpots: $this->emptyParkingSpotsFactory->generateParkingSpots($groundFloorCapacity)
+            [VehicleType::Moto, VehicleType::Car, VehicleType::Van],
+            $this->emptyParkingSpotsFactory->generateParkingSpots($groundFloorCapacity)
         );
 
         $secondFloor = new Floor(
-            allowedVehicleTypes: [VehicleType::Car, VehicleType::Moto],
-            parkingSpots: $this->emptyParkingSpotsFactory->generateParkingSpots($secondFloorCapacity)
+            [VehicleType::Car, VehicleType::Moto],
+            $this->emptyParkingSpotsFactory->generateParkingSpots($secondFloorCapacity)
         );
 
         $thirdFloor = new Floor(
-            allowedVehicleTypes: [VehicleType::Car, VehicleType::Moto],
-            parkingSpots: $this->emptyParkingSpotsFactory->generateParkingSpots($thirdFloorCapacity)
+            [VehicleType::Car, VehicleType::Moto],
+            $this->emptyParkingSpotsFactory->generateParkingSpots($thirdFloorCapacity)
         );
 
         $parkingGarage = new ParkingGarage([$groundFloor, $secondFloor, $thirdFloor]);
 
+        $this->io->newLine();
+        $this->io->title(self::START_MSG);
         for ($i = 1; $i <= $vehicleAmount; $i++) {
             $vehicle = $this->vehicleFactory->createRandomVehicle();
-            $this->io->writeln('Trying parking a <comment>' . $vehicle->type->name . '</comment>');
+            $this->io->writeln('Trying parking a <comment>' . $vehicle->type->name . '</comment>:');
 
             /** @var ParkingStrategyInterface $parkingStrategy */
             $parkingStrategy = $this->parkingStrategyFactory->getStrategy($vehicle);
@@ -97,10 +100,10 @@ class EmulateCommand extends Console\Command\Command
             $this->printGarageStats($parkingGarage);
             $this->io->newLine();
             $this->io->newLine();
-            sleep(2);
+            sleep(1);
         }
 
-        $this->io->info('You can check the file for logs ' . getcwd() . self::LOG_FILE);
+        $this->io->info('You can check the file log file: ' . getcwd() . self::LOG_FILE);
 
         return self::SUCCESS;
     }

@@ -1,19 +1,32 @@
 start: ## Start the project
-	docker-compose up -d --remove-orphans --no-recreate
+	@echo ""
+	@echo "==================== Start Container ========================"
+	@echo ""
+	@docker-compose up -d --remove-orphans --no-recreate
 
-stop: ## Stop the project
-	docker-compose down
+stop:
+	@docker-compose down
 
 bash: ## Enter the app container with bash
-	docker-compose exec app bash
+	@docker-compose exec app bash
 
 emulate: ## Enter the app container and emulate parking
-	docker-compose exec app php app emulate
+	@echo ""
+	@echo "==================== Application ============================"
+	@echo ""
+	@docker-compose exec app php app emulate
 
 composer-install: ## Run Unit tests
-	docker-compose exec app composer install
+	@echo ""
+	@echo "==================== Composer Install ======================="
+	@echo ""
+	@docker-compose exec app composer install
 
 unit: ## Run Unit tests
-	docker-compose exec app vendor/bin/phpunit .
+	@echo ""
+	@echo "==================== Unit Tests ============================="
+	@echo ""
+	@docker-compose exec app vendor/bin/phpunit --no-coverage;
 
 run: start composer-install unit emulate ##Run all
+
