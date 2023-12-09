@@ -13,6 +13,9 @@ final class ParkingGarage
         $this->setFloors($floors);
     }
 
+    /**
+     * @return array<Floor>
+     */
     public function getFloors(): array
     {
         return $this->floors;
