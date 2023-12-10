@@ -103,7 +103,7 @@ class EmulateCommand extends Console\Command\Command
             sleep(1);
         }
 
-        $this->io->info('You can check the file log file: ' . getcwd() . self::LOG_FILE);
+        $this->io->info('You can check the log file: ' . getcwd() . self::LOG_FILE);
 
         return self::SUCCESS;
     }

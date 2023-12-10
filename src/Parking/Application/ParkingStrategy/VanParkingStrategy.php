@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Parking\Application\ParkingStrategy;
 
 
@@ -29,13 +31,13 @@ readonly class VanParkingStrategy implements ParkingStrategyInterface
         /** @var Floor $floor */
         foreach ($allowedFloors as $floor) {
             $halfSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                $floor,
-                ParkingSpotOccupancy::Half
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Half
             );
 
             $fullSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                $floor,
-                ParkingSpotOccupancy::Free
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Free
             );
 
             if ($halfSpotNumber !== null && $fullSpotNumber !== null) {
@@ -48,8 +50,8 @@ readonly class VanParkingStrategy implements ParkingStrategyInterface
         /** @var Floor $floor */
         foreach ($allowedFloors as $floor) {
             $firstFreeSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                $floor,
-                ParkingSpotOccupancy::Free
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Free
             );
 
             if ($firstFreeSpotNumber === null) {
@@ -57,9 +59,9 @@ readonly class VanParkingStrategy implements ParkingStrategyInterface
             }
 
             $secondFreeSpotNumber = $this->finderService->getRequiredParkingSpotKey(
-                $floor,
-                ParkingSpotOccupancy::Free,
-                $firstFreeSpotNumber
+                floor: $floor,
+                spotOccupancy: ParkingSpotOccupancy::Free,
+                blockedNumber: $firstFreeSpotNumber
             );
 
             if ($secondFreeSpotNumber !== null) {

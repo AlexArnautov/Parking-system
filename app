@@ -14,9 +14,7 @@ $container = new ContainerBuilder();
 $fileLocator = new Component\Config\FileLocator(__DIR__ . '/config');
 $fileLoader = new PhpFileLoader(container: $container, locator: $fileLocator);
 $fileLoader->load('services.php');
-
 $container->compile();
-
 
 $application = new Application();
 $application->addCommands([
