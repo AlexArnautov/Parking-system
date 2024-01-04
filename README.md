@@ -1,16 +1,20 @@
-# Machine Requirements
+# The assignment
+Please implement a software solution that will enable various types of vehicle to park
+in a parking garage.
 
-For this challenge to run, you'll have to have Docker running or have PHP running locally on your machine.
+When a vehicle arrives at the parking garage, and if there is space available, we
+should see a message on the screen saying “Welcome, please go in”.
+When a vehicle arrives at the entrance to the parking garage, and it's full, we
+should see a message saying “Sorry, no spaces left”.
 
-This README assumes you're using Docker to run the challenge. 
+Must accept multiple types of vehicles: cars, vans, motorcycles
 
-1. Start the Docker containers; `docker compose up -d`
+Each type will have different size (e.g. 2 motorcycles can park in 1 car spot, a
+van takes 1.5 car spots).
 
-2. Run your tests; `docker compose exec app vendor/bin/phpunit .` 
+Must have 3 floors, each floor has different capacity.
 
-3. Stop the docker containers; `docker compose down`
-
-Without further ado - good luck with the challenge and, even more importantly, HAVE FUN!
+A Van can only park in the ground floor.
 
 # Instruction
 
